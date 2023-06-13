@@ -8,10 +8,20 @@ export interface IUser {
     isConfirmed: boolean;
     code: string;
     expirationDate: Date;
+    banInfo: IBanInfo;
 }
 
 export interface ICreateUserDto {
     login: string;
     password: string;
     email: string;
+}
+
+export interface IBanUser {
+    isBanned: boolean;
+    banReason: string;
+}
+
+export interface IBanInfo extends IBanUser {
+    banDate: Date;
 }

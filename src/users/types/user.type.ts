@@ -7,4 +7,7 @@ export type UsersRequest = {
     pageSize?: number | undefined;
     searchLoginTerm?: string | undefined;
     searchEmailTerm?: string | undefined;
+    banStatus?: BanStatus;
 };
+
+export type BanStatus = "all" | "banned" | "notBanned";

@@ -18,10 +18,11 @@ import { CommentsRepository } from "../comments/comments.repository";
 import { SessionsRepository } from "../sessions/sessions.repository";
 import { likesProviders } from "../sup-services/query/like.providers";
 import { LikesRepository } from "../sup-services/query/like.repository";
+import { BlogsControllerForSA } from "./blogsForSuperAdmin.controller";
 
 @Module({
     imports: [DatabaseModule],
-    controllers: [BlogsController],
+    controllers: [BlogsController, BlogsControllerForSA],
     providers: [
         BlogsService,
         QueryService,

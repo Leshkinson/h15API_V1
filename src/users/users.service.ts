@@ -2,6 +2,8 @@ import { uuid } from "uuidv4";
 import * as bcrypt from "bcrypt";
 import { JwtPayload } from "jsonwebtoken";
 import { RefType, SortOrder } from "mongoose";
+import { BanStatus } from "./types/user.type";
+import { BanUserDto } from "./dto/ban-user.dto";
 import { UserModel } from "./schema/user.schema";
 import { IUser } from "./interface/user.interface";
 import { Inject, Injectable } from "@nestjs/common";
@@ -36,7 +38,13 @@ export class UsersService {
         pageSize = 10,
         searchLoginTerm: { login: { $regex: RegExp } } | NonNullable<unknown> = {},
         searchEmailTerm: { email: { $regex: RegExp } } | NonNullable<unknown> = {},
+        banStatus: BanStatus = "all",
     ): Promise<IUser[]> {
+        const banStatusCFG = {
+            all: { $and: [{ isBanned: true }, { isBanned: false }] },
+            banned: { isBanned: true },
+            notBanned: { isBanned: false },
+        };
         if (searchLoginTerm) searchLoginTerm = { login: { $regex: new RegExp(`.*${searchLoginTerm}.*`, "i") } };
         if (searchEmailTerm) searchEmailTerm = { email: { $regex: new RegExp(`.*${searchEmailTerm}.*`, "i") } };
 
@@ -49,6 +57,7 @@ export class UsersService {
             pageSize,
             searchLoginTerm,
             searchEmailTerm,
+            banStatusCFG[banStatus],
         );
     }
 
@@ -132,6 +141,14 @@ export class UsersService {
     public async delete(id: RefType): Promise<IUser> {
         const deleteUser = await this.userRepository.delete(id);
         if (deleteUser) return deleteUser;
+        throw new Error();
+    }
+
+    public async assigningBanToUser(id: RefType, banUserDto: BanUserDto) {
+        const candidateForBan = await this.userRepository.updateUserByBan(id, banUserDto);
+        if (candidateForBan) {
+            return candidateForBan;
+        }
         throw new Error();
     }
 

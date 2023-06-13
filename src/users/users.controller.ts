@@ -5,9 +5,10 @@ import { UsersRequest } from "./types/user.type";
 import { IUser } from "./interface/user.interface";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { QueryService } from "../sup-services/query/query.service";
-import { Controller, Get, Post, Body, Param, Delete, Res, Req, HttpStatus } from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, Delete, Res, Req, HttpStatus, Put } from "@nestjs/common";
+import { BanUserDto } from "./dto/ban-user.dto";
 
-@Controller("users")
+@Controller("sa/users")
 export class UsersController {
     constructor(private readonly usersService: UsersService, private readonly queryService: QueryService) {}
 
@@ -30,7 +31,7 @@ export class UsersController {
     public async getAllUsers(@Req() req: Request, @Res() res: Response) {
         try {
             // eslint-disable-next-line prefer-const
-            let { sortBy, sortDirection, pageNumber, pageSize, searchLoginTerm, searchEmailTerm } =
+            let { sortBy, sortDirection, pageNumber, pageSize, searchLoginTerm, searchEmailTerm, banStatus } =
                 req.query as UsersRequest;
             pageNumber = Number(pageNumber ?? 1);
             pageSize = Number(pageSize ?? 10);
@@ -42,6 +43,7 @@ export class UsersController {
                 pageSize,
                 searchLoginTerm,
                 searchEmailTerm,
+                banStatus,
             );
             const totalCount: number = await this.queryService.getTotalCountForUsers(searchLoginTerm, searchEmailTerm);
 
@@ -66,6 +68,22 @@ export class UsersController {
             await this.usersService.delete(id);
 
             res.sendStatus(HttpStatus.NO_CONTENT);
+        } catch (error) {
+            if (error instanceof Error) {
+                res.sendStatus(HttpStatus.NOT_FOUND);
+                console.log(error.message);
+            }
+        }
+    }
+
+    @Put(":id/ban")
+    @AuthGuard()
+    public async banOrUnban(@Param("id") id: string, @Body() banUserDto: BanUserDto, @Res() res: Response) {
+        try {
+            const userBan = await this.usersService.assigningBanToUser(id, banUserDto);
+            if (userBan) {
+                res.sendStatus(HttpStatus.NO_CONTENT);
+            }
         } catch (error) {
             if (error instanceof Error) {
                 res.sendStatus(HttpStatus.NOT_FOUND);

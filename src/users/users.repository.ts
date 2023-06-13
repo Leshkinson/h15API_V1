@@ -1,4 +1,5 @@
 import { JwtPayload } from "jsonwebtoken";
+import { BanUserDto } from "./dto/ban-user.dto";
 import { IUser } from "./interface/user.interface";
 import { Inject, Injectable } from "@nestjs/common";
 import { Model, RefType, SortOrder } from "mongoose";
@@ -19,15 +20,16 @@ export class UsersRepository {
         limit = 10,
         searchLoginTerm: { login: { $regex: RegExp } } | NonNullable<unknown> = {},
         searchEmailTerm: { email: { $regex: RegExp } } | NonNullable<unknown> = {},
+        banStatus: { $and: { isBanned: boolean }[] } | { isBanned: boolean },
     ): Promise<IUser[]> {
         return this.userModel
-            .find({ $or: [searchLoginTerm, searchEmailTerm] })
+            .find({ $and: [{ $or: [searchLoginTerm, searchEmailTerm] }, { isBanned: banStatus }] })
             .sort({ [sortBy]: sortDirection })
             .skip(skip)
             .limit(limit);
     }
 
-    public async find(id: string | JwtPayload): Promise<IUser | null> {
+    public async find(id: string | JwtPayload | RefType): Promise<IUser | null> {
         return this.userModel.findById({ _id: id });
     }
 
@@ -58,6 +60,18 @@ export class UsersRepository {
             { _id: id },
             {
                 code: code,
+            },
+        );
+    }
+
+    public async updateUserByBan(id: string | RefType, banUserDto: BanUserDto) {
+        const banDate = new Date().toISOString();
+        return this.userModel.findOneAndUpdate(
+            { _id: id },
+            {
+                isBanned: banUserDto.isBanned,
+                banDate: banDate,
+                banReason: banUserDto.banReason,
             },
         );
     }
