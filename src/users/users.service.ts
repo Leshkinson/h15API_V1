@@ -1,7 +1,7 @@
 import { uuid } from "uuidv4";
 import * as bcrypt from "bcrypt";
 import { JwtPayload } from "jsonwebtoken";
-import { RefType, SortOrder } from "mongoose";
+import mongoose, { RefType, SortOrder } from "mongoose";
 import { BanStatus } from "./types/user.type";
 import { BanUserDto } from "./dto/ban-user.dto";
 import { UserModel } from "./schema/user.schema";
@@ -16,12 +16,14 @@ import {
     passwordConfirmedTemplate,
     userInvitationTemplate,
 } from "../sup-services/application/mailer/templates/templates";
+import { BanListRepository } from "../sup-services/query/ban-list.repository";
 
 @Injectable()
 export class UsersService {
     constructor(
         private readonly mailService: MailService,
         @Inject("userRepository") private readonly userRepository: UsersRepository,
+        @Inject("banListRepository") private readonly banListRepository: BanListRepository,
     ) {
         this.userRepository = new UsersRepository(UserModel);
     }
@@ -145,11 +147,37 @@ export class UsersService {
     }
 
     public async assigningBanToUser(id: RefType, banUserDto: BanUserDto) {
-        const candidateForBan = await this.userRepository.updateUserByBan(id, banUserDto);
+        const candidateForBan = await this.userRepository.find(id);
         if (candidateForBan) {
-            return candidateForBan;
+            throw new Error();
         }
-        throw new Error();
+
+        const banCondition = !candidateForBan.banInfo.isBanned && banUserDto.isBanned;
+        const unBanCondition = candidateForBan.banInfo.isBanned && !banUserDto.isBanned;
+
+        if (!banCondition && !unBanCondition) return;
+
+        const session = await mongoose.startSession();
+        try {
+            session.startTransaction();
+            candidateForBan.banInfo.isBanned = banUserDto.isBanned;
+            await candidateForBan.save();
+            // throw new Error();
+            banCondition
+                ? await this.banListRepository.addUserInBanList(id)
+                : await this.banListRepository.deleteUserFromBanList(id);
+            await session.commitTransaction();
+            console.log("success");
+
+            return true;
+        } catch (error) {
+            console.log("error");
+            await session.abortTransaction();
+
+            return false;
+        } finally {
+            session.endSession().then(() => console.log("Session ended"));
+        }
     }
 
     public async testingDelete(): Promise<void> {

@@ -17,6 +17,8 @@ import { RefreshTokenStrategy } from "./strategies/refreshToken.strategy";
 import { MailModule } from "../sup-services/application/mailer/mail.module";
 import { MailService } from "../sup-services/application/mailer/mail.service";
 import { CacheModule } from "@nestjs/cache-manager";
+import { BanListRepository } from "../sup-services/query/ban-list.repository";
+import { banListProviders } from "../sup-services/query/ban-list.providers";
 
 @Module({
     imports: [
@@ -28,12 +30,12 @@ import { CacheModule } from "@nestjs/cache-manager";
     ],
     controllers: [AuthController],
     providers: [
+        MailService,
         AuthService,
         UsersService,
-        SessionsService,
         AccessStrategy,
+        SessionsService,
         RefreshTokenStrategy,
-        MailService,
         {
             provide: "userRepository",
             useClass: UsersRepository,
@@ -46,6 +48,11 @@ import { CacheModule } from "@nestjs/cache-manager";
             provide: `${MAILER_OPTIONS}`,
             useExisting: MailerService,
         },
+        {
+            provide: "banListRepository",
+            useValue: BanListRepository,
+        },
+        ...banListProviders,
         ...usersProviders,
         ...sessionsProviders,
     ],

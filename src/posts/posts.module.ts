@@ -21,6 +21,8 @@ import { likesProviders } from "../sup-services/query/like.providers";
 import { LikesRepository } from "../sup-services/query/like.repository";
 import { MailModule } from "../sup-services/application/mailer/mail.module";
 import { MailService } from "../sup-services/application/mailer/mail.service";
+import { BanListRepository } from "../sup-services/query/ban-list.repository";
+import { banListProviders } from "../sup-services/query/ban-list.providers";
 
 @Module({
     imports: [DatabaseModule, MailModule],
@@ -57,6 +59,11 @@ import { MailService } from "../sup-services/application/mailer/mail.service";
             provide: "sessionRepository",
             useValue: SessionsRepository,
         },
+        {
+            provide: "banListRepository",
+            useValue: BanListRepository,
+        },
+        ...banListProviders,
         ...blogsProviders,
         ...postsProviders,
         ...likesProviders,
