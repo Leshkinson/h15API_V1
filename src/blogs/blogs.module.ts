@@ -18,11 +18,13 @@ import { CommentsRepository } from "../comments/comments.repository";
 import { SessionsRepository } from "../sessions/sessions.repository";
 import { likesProviders } from "../sup-services/query/like.providers";
 import { LikesRepository } from "../sup-services/query/like.repository";
-import { BlogsControllerForSA } from "./blogsForSuperAdmin.controller";
+import { BloggerBlogsController } from "./blogger_api/blogger_blogs.controller";
+import { PublicBlogsController } from "./public_api/public_blogs.controller";
+import { SABlogsController } from "./super_admin_api/sa_blogs.controller";
 
 @Module({
     imports: [DatabaseModule],
-    controllers: [BlogsController, BlogsControllerForSA],
+    controllers: [BloggerBlogsController, PublicBlogsController, SABlogsController],
     providers: [
         BlogsService,
         QueryService,

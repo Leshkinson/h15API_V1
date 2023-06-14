@@ -12,8 +12,8 @@ export class BlogsService {
         this.blogRepository = new BlogsRepository(BlogModel);
     }
 
-    public async createBlog(createBlogDto: CreateBlogDto): Promise<IBlog> {
-        return this.blogRepository.create(createBlogDto);
+    public async createBlog(createBlogDto: CreateBlogDto, userId: string): Promise<IBlog> {
+        return this.blogRepository.create(createBlogDto, userId);
     }
 
     public async findAllBlogs(
@@ -22,13 +22,14 @@ export class BlogsService {
         pageSize = 10,
         sortBy = "createdAt",
         sortDirection: SortOrder | undefined = "desc",
+        userId: string,
     ): Promise<IBlog[]> {
         if (searchNameTerm)
             searchNameTerm = {
                 name: { $regex: new RegExp(`.*${searchNameTerm}.*`, "i") },
             };
         const skip = Number((pageNumber - 1) * pageSize);
-        return this.blogRepository.findAll(searchNameTerm, skip, pageSize, sortBy, sortDirection);
+        return this.blogRepository.findAll(searchNameTerm, skip, pageSize, sortBy, sortDirection, userId);
     }
 
     public async findOne(id: RefType): Promise<IBlog | undefined> {
@@ -50,10 +51,10 @@ export class BlogsService {
         throw new Error();
     }
 
-    public async getTotalCountForBlogs(searchNameTerm: string | undefined | object): Promise<number> {
+    public async getTotalCountForBlogs(searchNameTerm: string | undefined | object, userId: string): Promise<number> {
         if (searchNameTerm) searchNameTerm = { name: { $regex: new RegExp(`.*${searchNameTerm}.*`, "i") } };
 
-        return await this.blogRepository.getBlogsCount(searchNameTerm);
+        return await this.blogRepository.getBlogsCount(searchNameTerm, userId);
     }
 
     public async testingDelete(): Promise<void> {

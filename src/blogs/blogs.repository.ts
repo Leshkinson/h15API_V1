@@ -8,8 +8,8 @@ import { UpdateBlogDto } from "./dto/update-blog.dto";
 export class BlogsRepository {
     constructor(@Inject("BLOG_MODEL") private readonly blogModel: Model<IBlog>) {}
 
-    public async create(createBlogDto: CreateBlogDto): Promise<IBlog> {
-        return this.blogModel.create({ ...createBlogDto, isMembership: false });
+    public async create(createBlogDto: CreateBlogDto, userId: string): Promise<IBlog> {
+        return this.blogModel.create({ ...createBlogDto, isMembership: false, userId: userId });
     }
 
     public async findAll(
@@ -18,9 +18,10 @@ export class BlogsRepository {
         limit = 10,
         sortBy = "createdAt",
         sortDirection: SortOrder = "desc",
+        userId: string,
     ): Promise<IBlog[]> {
         return this.blogModel
-            .find(searchNameTerm)
+            .find({ $and: [searchNameTerm, { userId: userId }] })
             .sort({ [sortBy]: sortDirection })
             .skip(skip)
             .limit(limit);
@@ -40,8 +41,9 @@ export class BlogsRepository {
 
     public async getBlogsCount(
         searchNameTerm: { name: { $regex: RegExp } } | NonNullable<unknown> = {},
+        userId: string,
     ): Promise<number> {
-        return this.blogModel.countDocuments(searchNameTerm);
+        return this.blogModel.countDocuments({ $and: [searchNameTerm, { userId: userId }] });
     }
 
     public async deleteAll() {

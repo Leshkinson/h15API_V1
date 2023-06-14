@@ -7,6 +7,7 @@ export const BlogSchema = new Schema(
         description: { type: "string", required: true },
         websiteUrl: { type: "string", required: true },
         isMembership: { type: "boolean", required: true },
+        userId: { type: "boolean", required: true },
     },
     { timestamps: true },
 );
@@ -17,6 +18,7 @@ BlogSchema.set("toJSON", {
         delete dto._id;
         delete dto.__v;
         delete dto.updatedAt;
+        delete dto.userId;
     },
 });
 
