@@ -3,6 +3,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { SessionModel } from "./schema/session.schema";
 import { ISession } from "./interface/session.interface";
 import { SessionsRepository } from "./sessions.repository";
+import { RefType } from "mongoose";
 // import { CreateSessionDto } from "./dto/create-session.dto";
 // import { UpdateSessionDto } from "./dto/update-session.dto";
 
@@ -34,5 +35,9 @@ export class SessionsService {
 
     public async deleteTheSession(userId: string, deviceId: string): Promise<void> {
         await this.sessionRepository.deleteOne(userId, deviceId);
+    }
+
+    public async deleteSessionByBanUser(userId: string | RefType): Promise<void> {
+        await this.sessionRepository.deleteAllForBanUser(userId);
     }
 }

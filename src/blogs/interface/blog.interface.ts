@@ -9,3 +9,7 @@ export interface ICreateBlogDto {
 export interface IBlog extends ICreateBlogDto {
     readonly _id: mongoose.Schema.Types.ObjectId;
 }
+
+export interface IBlogWithUserId extends IBlog {
+    readonly userId: string;
+}

@@ -1,16 +1,16 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res, UseGuards } from "@nestjs/common";
-import { BlogsService } from "../blogs.service";
-import { QueryService } from "../../sup-services/query/query.service";
-import { AuthGuard } from "../../auth.guard";
-import { CreateBlogDto } from "../dto/create-blog.dto";
 import { Request, Response } from "express";
-import { IBlog } from "../interface/blog.interface";
-import { UpdateBlogDto } from "../dto/update-blog.dto";
-import { CreatePostDtoWithoutIdAndName } from "../../posts/dto/create-post.dto";
-import { IPost } from "../../posts/interface/post.interface";
+import { BlogsService } from "../blogs.service";
 import { BlogsRequest } from "../types/blog.type";
+import { IBlog } from "../interface/blog.interface";
 import { AccessGuard } from "../../auth/access.guard";
+import { CreateBlogDto } from "../dto/create-blog.dto";
+import { UpdateBlogDto } from "../dto/update-blog.dto";
+import { IPost } from "../../posts/interface/post.interface";
 import { RequestWithUser } from "../../auth/interface/auth.interface";
+import { QueryService } from "../../sup-services/query/query.service";
+import { UpdatePostDtoByQuery } from "../../posts/dto/update-post.dto";
+import { CreatePostDtoWithoutIdAndName } from "../../posts/dto/create-post.dto";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res, UseGuards } from "@nestjs/common";
 
 @Controller("blogger/blogs")
 export class BloggerBlogsController {
@@ -52,7 +52,6 @@ export class BloggerBlogsController {
     }
     @UseGuards(AccessGuard)
     @Post()
-    //@AuthGuard()
     public async create(@Body() createBlogDto: CreateBlogDto, @Req() req: Request, @Res() res: Response) {
         try {
             const request = req as RequestWithUser;
@@ -68,10 +67,16 @@ export class BloggerBlogsController {
     }
     @UseGuards(AccessGuard)
     @Put(":id")
-    //@AuthGuard()
-    public async update(@Param("id") id: string, @Res() res: Response, @Body() updateBlogDto: UpdateBlogDto) {
+    public async update(
+        @Param("id") id: string,
+        @Res() res: Response,
+        @Req() req: Request,
+        @Body() updateBlogDto: UpdateBlogDto,
+    ) {
         try {
-            const updateBlog = await this.blogsService.update(id, updateBlogDto);
+            const request = req as RequestWithUser;
+            const { userId } = request.user;
+            const updateBlog = await this.blogsService.update(id, userId, updateBlogDto);
             if (updateBlog) {
                 res.sendStatus(HttpStatus.NO_CONTENT);
             }
@@ -82,14 +87,16 @@ export class BloggerBlogsController {
             }
         }
     }
-
+    @UseGuards(AccessGuard)
     @Delete(":id")
-    @AuthGuard()
-    public async delete(@Param("id") id: string, @Res() res: Response) {
+    public async delete(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
         try {
-            await this.blogsService.delete(id);
-
-            res.sendStatus(HttpStatus.NO_CONTENT);
+            const request = req as RequestWithUser;
+            const { userId } = request.user;
+            const deleteBlog = await this.blogsService.delete(id, userId);
+            if (deleteBlog) {
+                res.sendStatus(HttpStatus.NO_CONTENT);
+            }
         } catch (error) {
             if (error instanceof Error) {
                 res.sendStatus(HttpStatus.NOT_FOUND);
@@ -97,9 +104,8 @@ export class BloggerBlogsController {
             }
         }
     }
-
+    @UseGuards(AccessGuard)
     @Post(":blogId/posts")
-    @AuthGuard()
     public async createPostTheBlog(
         @Param("blogId") blogId: string,
         @Body() createPostDtoWithoutIdAndName: CreatePostDtoWithoutIdAndName,
@@ -107,9 +113,12 @@ export class BloggerBlogsController {
         @Res() res: Response,
     ) {
         try {
+            const request = req as RequestWithUser;
+            const { userId } = request.user;
             const newPost: IPost | undefined = await this.queryService.createPostForTheBlog(
                 createPostDtoWithoutIdAndName,
                 blogId,
+                userId,
             );
             if (newPost) res.status(HttpStatus.CREATED).json(newPost);
         } catch (error) {
@@ -119,10 +128,27 @@ export class BloggerBlogsController {
             }
         }
     }
-
+    @UseGuards(AccessGuard)
     @Put(":blogId/posts/:postId")
-    public async updateExistingPost(@Res() res: Response) {
+    public async updateExistingPost(
+        @Param("blogId") blogId: string,
+        @Param("postId") postId: string,
+        @Req() req: Request,
+        @Res() res: Response,
+        @Body() updatePostDtoByQuery: UpdatePostDtoByQuery,
+    ) {
         try {
+            const request = req as RequestWithUser;
+            const { userId } = request.user;
+            const updatePost: IPost | undefined = await this.queryService.updatePostForTheBlog(
+                postId,
+                blogId,
+                userId,
+                updatePostDtoByQuery,
+            );
+            if (updatePost) {
+                res.sendStatus(HttpStatus.NO_CONTENT);
+            }
         } catch (error) {
             if (error instanceof Error) {
                 res.sendStatus(HttpStatus.NOT_FOUND);
@@ -130,10 +156,21 @@ export class BloggerBlogsController {
             }
         }
     }
-
+    @UseGuards(AccessGuard)
     @Delete(":blogId/posts/:postId")
-    public async deletePost(@Res() res: Response) {
+    public async deletePost(
+        @Param("blogId") blogId: string,
+        @Param("postId") postId: string,
+        @Req() req: Request,
+        @Res() res: Response,
+    ) {
         try {
+            const request = req as RequestWithUser;
+            const { userId } = request.user;
+            const deleteBlog = await this.queryService.deletePostForTheBlog(postId, blogId, userId);
+            if (deleteBlog) {
+                res.sendStatus(HttpStatus.NO_CONTENT);
+            }
         } catch (error) {
             if (error instanceof Error) {
                 res.sendStatus(HttpStatus.NOT_FOUND);

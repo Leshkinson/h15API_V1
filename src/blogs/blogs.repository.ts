@@ -1,4 +1,4 @@
-import { IBlog } from "./interface/blog.interface";
+import { IBlog, IBlogWithUserId } from "./interface/blog.interface";
 import { Inject, Injectable } from "@nestjs/common";
 import { Model, RefType, SortOrder } from "mongoose";
 import { CreateBlogDto } from "./dto/create-blog.dto";
@@ -27,12 +27,16 @@ export class BlogsRepository {
             .limit(limit);
     }
 
-    public async find(id: RefType): Promise<IBlog | null> {
+    public async find(id: RefType): Promise<IBlog | IBlogWithUserId | null> {
         return this.blogModel.findById({ _id: id });
     }
 
     public async updateBlog(id: RefType, updateBlogDto: UpdateBlogDto): Promise<IBlog | null> {
         return this.blogModel.findOneAndUpdate({ _id: id }, updateBlogDto);
+    }
+
+    public async updateBlogByBind(id: RefType, userId: string): Promise<IBlog | null> {
+        return this.blogModel.findOneAndUpdate({ _id: id }, { userId: userId });
     }
 
     public async delete(id: RefType) {

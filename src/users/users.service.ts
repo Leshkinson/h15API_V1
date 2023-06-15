@@ -17,10 +17,12 @@ import {
     userInvitationTemplate,
 } from "../sup-services/application/mailer/templates/templates";
 import { BanListRepository } from "../sup-services/query/ban-list.repository";
+import { SessionsService } from "../sessions/sessions.service";
 
 @Injectable()
 export class UsersService {
     constructor(
+        private readonly sessionsService: SessionsService,
         private readonly mailService: MailService,
         @Inject("userRepository") private readonly userRepository: UsersRepository,
         @Inject("banListRepository") private readonly banListRepository: BanListRepository,
@@ -155,7 +157,7 @@ export class UsersService {
         const banCondition = !candidateForBan.banInfo.isBanned && banUserDto.isBanned;
         const unBanCondition = candidateForBan.banInfo.isBanned && !banUserDto.isBanned;
 
-        if (!banCondition && !unBanCondition) return;
+        if (!banCondition && !unBanCondition) return false;
 
         const session = await mongoose.startSession();
         try {
@@ -166,6 +168,7 @@ export class UsersService {
             banCondition
                 ? await this.banListRepository.addUserInBanList(id)
                 : await this.banListRepository.deleteUserFromBanList(id);
+            await this.sessionsService.deleteSessionByBanUser(id);
             await session.commitTransaction();
             console.log("success");
 

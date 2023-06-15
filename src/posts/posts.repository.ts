@@ -1,7 +1,7 @@
 import { IPost } from "./interface/post.interface";
 import { Inject, Injectable } from "@nestjs/common";
 import { Model, RefType, SortOrder } from "mongoose";
-import { UpdatePostDto } from "./dto/update-post.dto";
+import { UpdatePostDto, UpdatePostDtoByQuery } from "./dto/update-post.dto";
 import { CreatePostDto } from "./dto/create-post.dto";
 
 @Injectable()
@@ -32,8 +32,19 @@ export class PostsRepository {
         return this.postModel.findById({ _id: id });
     }
 
+    public async findByPostIdAndBlogId(id: RefType | string, blogId: string) {
+        return this.postModel.find({ $and: [{ _id: id }, { blogId: blogId }] });
+    }
+
     public async updatePost(id: RefType, updatePostDto: UpdatePostDto): Promise<IPost | null> {
         return this.postModel.findOneAndUpdate({ _id: id }, updatePostDto);
+    }
+
+    public async updatePostByQueryService(
+        id: RefType,
+        updatePostDtoByQuery: UpdatePostDtoByQuery,
+    ): Promise<IPost | null> {
+        return this.postModel.findOneAndUpdate({ _id: id }, updatePostDtoByQuery);
     }
 
     public async deletePost(id: RefType) {

@@ -1,7 +1,6 @@
 import { RefType, SortOrder } from "mongoose";
 import { LikeModel } from "./schema/like.schema";
 import { LikesRepository } from "./like.repository";
-import { Inject, Injectable } from "@nestjs/common";
 import { AuthService } from "../../auth/auth.service";
 import { UserModel } from "../../users/schema/user.schema";
 import { PostModel } from "../../posts/schema/post.schema";
@@ -13,6 +12,9 @@ import { BlogsRepository } from "../../blogs/blogs.repository";
 import { UsersRepository } from "../../users/users.repository";
 import { CommentModel } from "../../comments/schema/comments.schema";
 import { IComment } from "../../comments/interface/comment.interface";
+import { UpdatePostDtoByQuery } from "../../posts/dto/update-post.dto";
+import { IBlogWithUserId } from "../../blogs/interface/blog.interface";
+import { ForbiddenException, Inject, Injectable } from "@nestjs/common";
 import { CommentsRepository } from "../../comments/comments.repository";
 import { LikesStatusCfgValues, LikesStatusType } from "./types/like.type";
 import { JWT, LIKE_STATUS, TagRepositoryTypeCfgValues } from "../../const/const";
@@ -45,9 +47,11 @@ export class QueryService {
     public async createPostForTheBlog(
         createPostDtoWithoutIdAndName: CreatePostDtoWithoutIdAndName,
         blogId: string,
+        userId: string,
     ): Promise<IPost> {
-        const blog = await this.blogRepository.find(blogId);
-        if (blog) {
+        const blog = (await this.blogRepository.find(blogId)) as IBlogWithUserId;
+        if (!blog) throw new Error();
+        if (blog.userId === userId) {
             //const blogId = new mongoose.Types.ObjectId((blog?._id).toString());
             const createPostDto = new CreatePostDto(
                 createPostDtoWithoutIdAndName.title,
@@ -57,7 +61,38 @@ export class QueryService {
             );
             return await this.postRepository.create(createPostDto, blog.name);
         }
-        throw new Error();
+        throw new ForbiddenException();
+    }
+
+    public async updatePostForTheBlog(
+        postId: string,
+        blogId: string,
+        userId: string,
+        updatePostDtoByQuery: UpdatePostDtoByQuery,
+    ) {
+        const blog = (await this.blogRepository.find(blogId)) as IBlogWithUserId;
+        if (!blog) throw new Error();
+        if (blog.userId === userId) {
+            const postForLaterUpdate = await this.postRepository.findByPostIdAndBlogId(postId, blogId);
+            if (postForLaterUpdate) {
+                return await this.postRepository.updatePostByQueryService(postId, updatePostDtoByQuery);
+            }
+            throw new Error();
+        }
+        throw new ForbiddenException();
+    }
+
+    public async deletePostForTheBlog(postId: string, blogId: string, userId: string) {
+        const blog = (await this.blogRepository.find(blogId)) as IBlogWithUserId;
+        if (!blog) throw new Error();
+        if (blog.userId === userId) {
+            const postForLaterUpdate = await this.postRepository.findByPostIdAndBlogId(postId, blogId);
+            if (postForLaterUpdate) {
+                return await this.postRepository.deletePost(postId);
+            }
+            throw new Error();
+        }
+        throw new ForbiddenException();
     }
 
     public async getPostsForTheBlog(

@@ -1,8 +1,8 @@
-import { Document } from "mongoose";
+//import { Document } from "mongoose";
 import * as mongoose from "mongoose";
 import { ExtendedLikesInfo } from "../../sup-services/query/interface/like.interface";
 
-export interface IPost extends Document {
+export interface IPost extends mongoose.Document {
     _id: mongoose.Schema.Types.ObjectId;
     title: string;
     shortDescription: string;

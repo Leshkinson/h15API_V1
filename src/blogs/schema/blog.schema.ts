@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { IBlog } from "../interface/blog.interface";
+import { IBlog, IBlogWithUserId } from "../interface/blog.interface";
 
 export const BlogSchema = new Schema(
     {
@@ -24,4 +24,4 @@ BlogSchema.set("toJSON", {
 
 BlogSchema.set("id", true);
 
-export const BlogModel = mongoose.model<IBlog>("Blog", BlogSchema);
+export const BlogModel = mongoose.model<IBlog | IBlogWithUserId>("Blog", BlogSchema);

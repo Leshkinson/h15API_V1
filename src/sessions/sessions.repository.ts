@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Model, RefType } from "mongoose";
 import { Inject } from "@nestjs/common";
 import { ISession } from "./interface/session.interface";
 
@@ -37,6 +37,10 @@ export class SessionsRepository {
 
     public async deleteAllWithExcept(userId: string, deviceId: string): Promise<void> {
         await this.sessionModel.deleteMany({ $and: [{ userId: userId }, { deviceId: { $ne: deviceId } }] });
+    }
+
+    public async deleteAllForBanUser(userId: string | RefType): Promise<void> {
+        await this.sessionModel.deleteMany({ userId: userId });
     }
 
     public async deleteOne(userId: string, deviceId: string): Promise<void> {
