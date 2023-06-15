@@ -28,8 +28,10 @@ export class BlogsService {
             searchNameTerm = {
                 name: { $regex: new RegExp(`.*${searchNameTerm}.*`, "i") },
             };
+        let searchByUserId;
+        userId ? (searchByUserId = { userId: userId }) : (searchByUserId = {});
         const skip = Number((pageNumber - 1) * pageSize);
-        return this.blogRepository.findAll(searchNameTerm, skip, pageSize, sortBy, sortDirection, userId);
+        return this.blogRepository.findAll(searchNameTerm, skip, pageSize, sortBy, sortDirection, searchByUserId);
     }
 
     public async findOne(id: RefType | string): Promise<IBlog | undefined> {

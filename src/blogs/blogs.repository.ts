@@ -18,10 +18,10 @@ export class BlogsRepository {
         limit = 10,
         sortBy = "createdAt",
         sortDirection: SortOrder = "desc",
-        userId: string,
+        searchByUserId: { userId: string } | NonNullable<unknown>,
     ): Promise<IBlog[]> {
         return this.blogModel
-            .find({ $and: [searchNameTerm, { userId: userId }] })
+            .find({ $and: [searchNameTerm, searchByUserId] })
             .sort({ [sortBy]: sortDirection })
             .skip(skip)
             .limit(limit);

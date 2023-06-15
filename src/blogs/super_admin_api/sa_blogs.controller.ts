@@ -25,7 +25,7 @@ export class SABlogsController {
                 sortDirection,
                 "null",
             );
-            const totalCount: number = await this.blogsService.getTotalCountForBlogs(searchNameTerm, "null");
+            const totalCount: number = await this.blogsService.getTotalCountForBlogs(searchNameTerm, null);
 
             res.status(HttpStatus.OK).json({
                 pagesCount: Math.ceil(totalCount / pageSize),
