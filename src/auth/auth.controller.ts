@@ -18,7 +18,7 @@ export class AuthController {
         private readonly usersService: UsersService,
         private readonly sessionsService: SessionsService,
     ) {}
-    @RateLimiterGuard()
+    //@RateLimiterGuard()
     @Post("login")
     public async login(@Body() authDto: AuthDto, @Req() req: Request, @Res() res: Response) {
         try {
@@ -124,7 +124,7 @@ export class AuthController {
             }
         }
     }
-    @RateLimiterGuard()
+    //@RateLimiterGuard()
     @Post("registration")
     public async registration(@Body() registrationDto: RegistrationDto, @Req() req: Request, @Res() res: Response) {
         try {
@@ -138,7 +138,7 @@ export class AuthController {
             }
         }
     }
-    @RateLimiterGuard()
+    //@RateLimiterGuard()
     @Post("registration-confirmation")
     public async confirmEmail(@Body() codeDto: CodeDto, @Res() res: Response) {
         try {
@@ -156,7 +156,7 @@ export class AuthController {
             }
         }
     }
-    @RateLimiterGuard()
+    //@RateLimiterGuard()
     @Post("registration-email-resending")
     public async resendConfirm(@Body() emailDto: EmailDto, @Res() res: Response) {
         try {
@@ -170,7 +170,7 @@ export class AuthController {
             }
         }
     }
-    @RateLimiterGuard()
+    //@RateLimiterGuard()
     @Post("password-recovery")
     public async recoveryPassword(@Body() emailDto: EmailDto, @Res() res: Response) {
         try {
@@ -184,7 +184,7 @@ export class AuthController {
             }
         }
     }
-    @RateLimiterGuard()
+    //@RateLimiterGuard()
     @Post("new-password")
     public async setupNewPassword(@Body() newPasswordDto: NewPasswordDto, @Res() res: Response) {
         try {

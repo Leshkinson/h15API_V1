@@ -10,9 +10,9 @@ export const UserSchema = new Schema(
         code: { type: "string", required: false },
         expirationDate: { type: "Date", required: false },
         banInfo: {
-            isBanned: { type: "boolean", required: true, default: false },
-            banDate: { type: "Date", required: true, default: null },
-            banReason: { type: "string", required: true, default: null },
+            isBanned: { type: "boolean", default: false },
+            banDate: { type: "Date", default: null },
+            banReason: { type: "string", default: null },
         },
     },
     { timestamps: true },

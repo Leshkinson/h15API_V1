@@ -45,7 +45,7 @@ export class UsersService {
         banStatus: BanStatus = "all",
     ): Promise<IUser[]> {
         const banStatusCFG = {
-            all: { $and: [{ isBanned: true }, { isBanned: false }] },
+            all: {},
             banned: { isBanned: true },
             notBanned: { isBanned: false },
         };
@@ -53,6 +53,7 @@ export class UsersService {
         if (searchEmailTerm) searchEmailTerm = { email: { $regex: new RegExp(`.*${searchEmailTerm}.*`, "i") } };
 
         const skip = Number((pageNumber - 1) * pageSize);
+        console.log("banStatusCFG[banStatus]", banStatusCFG[banStatus]);
 
         return await this.userRepository.findAll(
             sortBy,

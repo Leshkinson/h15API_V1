@@ -10,7 +10,15 @@ export class UsersRepository {
     constructor(@Inject("USER_MODEL") private readonly userModel: Model<IUser>) {}
 
     public async create(createUserDto: CreateUserDto): Promise<IUser> {
-        return await this.userModel.create({ ...createUserDto, isConfirmed: true });
+        return await this.userModel.create({
+            ...createUserDto,
+            isConfirmed: true,
+            // banInfo: {
+            //     isBanned: false,
+            //     banReason: "nothing nothing nothing nothing",
+            //     banDate: null,
+            // },
+        });
     }
 
     public async findAll(
@@ -20,10 +28,10 @@ export class UsersRepository {
         limit = 10,
         searchLoginTerm: { login: { $regex: RegExp } } | NonNullable<unknown> = {},
         searchEmailTerm: { email: { $regex: RegExp } } | NonNullable<unknown> = {},
-        banStatus: { $and: { isBanned: boolean }[] } | { isBanned: boolean },
+        banStatus: any,
     ): Promise<IUser[]> {
         return this.userModel
-            .find({ $and: [{ $or: [searchLoginTerm, searchEmailTerm] }, { isBanned: banStatus }] })
+            .find({ $and: [{ $or: [searchLoginTerm, searchEmailTerm] }, { ...banStatus }] })
             .sort({ [sortBy]: sortDirection })
             .skip(skip)
             .limit(limit);
