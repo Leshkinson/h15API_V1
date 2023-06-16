@@ -23,5 +23,5 @@ export interface IBanUser {
 }
 
 export interface IBanInfo extends IBanUser {
-    banDate: Date;
+    banDate: string;
 }

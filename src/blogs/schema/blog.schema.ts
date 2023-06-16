@@ -7,7 +7,7 @@ export const BlogSchema = new Schema(
         description: { type: "string", required: true },
         websiteUrl: { type: "string", required: true },
         isMembership: { type: "boolean", required: true },
-        userId: { type: "boolean", required: true },
+        userId: { type: "string", required: true },
     },
     { timestamps: true },
 );

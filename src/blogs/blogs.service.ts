@@ -22,7 +22,7 @@ export class BlogsService {
         pageSize = 10,
         sortBy = "createdAt",
         sortDirection: SortOrder | undefined = "desc",
-        userId: string,
+        userId: string | null,
     ): Promise<IBlog[]> {
         if (searchNameTerm)
             searchNameTerm = {
@@ -59,10 +59,15 @@ export class BlogsService {
         throw new ForbiddenException();
     }
 
-    public async getTotalCountForBlogs(searchNameTerm: string | undefined | object, userId: string): Promise<number> {
+    public async getTotalCountForBlogs(
+        searchNameTerm: string | undefined | object,
+        userId: string | null,
+    ): Promise<number> {
+        let searchByUserId;
+        userId ? (searchByUserId = { userId: userId }) : (searchByUserId = {});
         if (searchNameTerm) searchNameTerm = { name: { $regex: new RegExp(`.*${searchNameTerm}.*`, "i") } };
 
-        return await this.blogRepository.getBlogsCount(searchNameTerm, userId);
+        return await this.blogRepository.getBlogsCount(searchNameTerm, searchByUserId);
     }
 
     public async bindingBlogWithUser(id: string, userId: string) {

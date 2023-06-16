@@ -1,4 +1,5 @@
 import * as mongoose from "mongoose";
+import { RefType } from "mongoose";
 
 export interface ICreateBlogDto {
     readonly name: string;
@@ -12,4 +13,13 @@ export interface IBlog extends ICreateBlogDto {
 
 export interface IBlogWithUserId extends IBlog {
     readonly userId: string;
+}
+
+export interface IBlogWithBlogOwnerInfo extends IBlogWithUserId {
+    readonly createdAt: string;
+    readonly isMembership: boolean;
+    blogOwnerInfo: {
+        readonly userId: string;
+        readonly userLogin: string;
+    };
 }

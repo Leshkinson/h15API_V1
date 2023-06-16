@@ -13,7 +13,7 @@ import { UsersRepository } from "../../users/users.repository";
 import { CommentModel } from "../../comments/schema/comments.schema";
 import { IComment } from "../../comments/interface/comment.interface";
 import { UpdatePostDtoByQuery } from "../../posts/dto/update-post.dto";
-import { IBlogWithUserId } from "../../blogs/interface/blog.interface";
+import { IBlog, IBlogWithBlogOwnerInfo, IBlogWithUserId } from "../../blogs/interface/blog.interface";
 import { ForbiddenException, Inject, Injectable } from "@nestjs/common";
 import { CommentsRepository } from "../../comments/comments.repository";
 import { LikesStatusCfgValues, LikesStatusType } from "./types/like.type";
@@ -328,5 +328,29 @@ export class QueryService {
 
     public async testingDelete(): Promise<void> {
         await this.likeRepository.deleteAll();
+    }
+
+    public async changeBlogsForSA(blogs: IBlog[]): Promise<any> {
+        const changeBlogs = blogs.map(async (blog: IBlogWithBlogOwnerInfo): Promise<any> => {
+            const user = await this.userRepository.find(blog.userId);
+            // blog.blogOwnerInfo = {
+            //     userId: blog.userId,
+            //     userLogin: user.login,
+            // };
+            return {
+                id: blog._id,
+                name: blog.name,
+                description: blog.description,
+                websiteUrl: blog.websiteUrl,
+                createdAt: blog.createdAt,
+                isMembership: blog.isMembership,
+                blogOwnerInfo: {
+                    userId: blog.userId,
+                    userLogin: user.login,
+                },
+            };
+        });
+
+        return await Promise.all(changeBlogs);
     }
 }

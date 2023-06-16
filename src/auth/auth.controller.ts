@@ -10,6 +10,7 @@ import { SessionsService } from "../sessions/sessions.service";
 import { ISession } from "../sessions/interface/session.interface";
 import { AuthDto, CodeDto, EmailDto, NewPasswordDto, RegistrationDto } from "./dto/auth.dto";
 import { Body, Controller, Get, HttpStatus, Post, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { IsBanStatus } from "./isBanStatus.guard";
 
 @Controller("auth")
 export class AuthController {
@@ -19,10 +20,12 @@ export class AuthController {
         private readonly sessionsService: SessionsService,
     ) {}
     //@RateLimiterGuard()
+    @IsBanStatus()
     @Post("login")
     public async login(@Body() authDto: AuthDto, @Req() req: Request, @Res() res: Response) {
         try {
             const user = await this.usersService.verifyUser(authDto);
+            console.log(user);
             if (user && user.isConfirmed) {
                 const sessionDevice = await this.sessionsService.generateSession(
                     req.ip,
@@ -74,7 +77,8 @@ export class AuthController {
             }
         }
     }
-    //@UseGuards(RefreshGuard)
+    @UseGuards(RefreshGuard)
+    @IsBanStatus()
     @Post("refresh-token")
     public async updatePairTokens(@Req() req: Request, @Res() res: Response) {
         try {

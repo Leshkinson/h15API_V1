@@ -20,11 +20,13 @@ export class BlogsRepository {
         sortDirection: SortOrder = "desc",
         searchByUserId: { userId: string } | NonNullable<unknown>,
     ): Promise<IBlog[]> {
+        console.log("searchByUserId", searchByUserId);
         return this.blogModel
             .find({ $and: [searchNameTerm, searchByUserId] })
             .sort({ [sortBy]: sortDirection })
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
+            .lean();
     }
 
     public async find(id: RefType): Promise<IBlog | IBlogWithUserId | null> {
@@ -45,9 +47,9 @@ export class BlogsRepository {
 
     public async getBlogsCount(
         searchNameTerm: { name: { $regex: RegExp } } | NonNullable<unknown> = {},
-        userId: string,
+        searchByUserId: { userId: string } | NonNullable<unknown>,
     ): Promise<number> {
-        return this.blogModel.countDocuments({ $and: [searchNameTerm, { userId: userId }] });
+        return this.blogModel.countDocuments({ $and: [searchNameTerm, searchByUserId] });
     }
 
     public async deleteAll() {

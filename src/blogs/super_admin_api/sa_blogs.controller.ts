@@ -3,7 +3,7 @@ import { BlogsService } from "../blogs.service";
 import { QueryService } from "../../sup-services/query/query.service";
 import { Request, Response } from "express";
 import { BlogsRequest } from "../types/blog.type";
-import { IBlog } from "../interface/blog.interface";
+import { IBlog, IBlogWithUserId } from "../interface/blog.interface";
 import { AuthGuard } from "../../auth.guard";
 
 @Controller("sa/blogs")
@@ -23,16 +23,17 @@ export class SABlogsController {
                 pageSize,
                 sortBy,
                 sortDirection,
-                "null",
+                null,
             );
             const totalCount: number = await this.blogsService.getTotalCountForBlogs(searchNameTerm, null);
-
+            const changeBlogs = await this.queryService.changeBlogsForSA(blogs);
+            console.log("changeBlogs", changeBlogs);
             res.status(HttpStatus.OK).json({
                 pagesCount: Math.ceil(totalCount / pageSize),
                 page: pageNumber,
                 pageSize: pageSize,
                 totalCount: totalCount,
-                items: blogs,
+                items: changeBlogs,
             });
         } catch (error) {
             if (error instanceof Error) {

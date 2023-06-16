@@ -18,6 +18,7 @@ import {
 } from "../sup-services/application/mailer/templates/templates";
 import { BanListRepository } from "../sup-services/query/ban-list.repository";
 import { SessionsService } from "../sessions/sessions.service";
+import { BanListModel } from "../sup-services/query/schema/ban-list.schema";
 
 @Injectable()
 export class UsersService {
@@ -28,6 +29,7 @@ export class UsersService {
         @Inject("banListRepository") private readonly banListRepository: BanListRepository,
     ) {
         this.userRepository = new UsersRepository(UserModel);
+        this.banListRepository = new BanListRepository(BanListModel);
     }
 
     public async create(createUserDto: CreateUserDto) {
@@ -150,25 +152,45 @@ export class UsersService {
     }
 
     public async assigningBanToUser(id: RefType, banUserDto: BanUserDto) {
+        console.log("rgwergegeg");
         const candidateForBan = await this.userRepository.find(id);
-        if (candidateForBan) {
+        if (!candidateForBan) {
+            console.log("yerererer");
             throw new Error();
         }
 
         const banCondition = !candidateForBan.banInfo.isBanned && banUserDto.isBanned;
         const unBanCondition = candidateForBan.banInfo.isBanned && !banUserDto.isBanned;
-
-        if (!banCondition && !unBanCondition) return false;
+        console.log("yerererer2");
+        if (!banCondition && !unBanCondition) {
+            console.log("false");
+            return false;
+        }
 
         const session = await mongoose.startSession();
         try {
             session.startTransaction();
-            candidateForBan.banInfo.isBanned = banUserDto.isBanned;
-            await candidateForBan.save();
+            // const banDate = new Date().toISOString();
+            // candidateForBan.banInfo.isBanned = banUserDto.isBanned;
+            // candidateForBan.banInfo.banDate = banDate;
+            // candidateForBan.banInfo.banReason = banUserDto.banReason;
+            // await candidateForBan.save();
+            //await this.userRepository.updateUserByBan(id, banUserDto);
             // throw new Error();
-            banCondition
-                ? await this.banListRepository.addUserInBanList(id)
-                : await this.banListRepository.deleteUserFromBanList(id);
+            if (banCondition) {
+                const banDate = new Date().toISOString();
+                candidateForBan.banInfo.isBanned = banUserDto.isBanned;
+                candidateForBan.banInfo.banDate = banDate;
+                candidateForBan.banInfo.banReason = banUserDto.banReason;
+                await candidateForBan.save();
+                await this.banListRepository.addUserInBanList(id);
+            } else {
+                candidateForBan.banInfo.isBanned = banUserDto.isBanned;
+                candidateForBan.banInfo.banDate = null;
+                candidateForBan.banInfo.banReason = null;
+                await candidateForBan.save();
+                await this.banListRepository.deleteUserFromBanList(id);
+            }
             await this.sessionsService.deleteSessionByBanUser(id);
             await session.commitTransaction();
             console.log("success");
@@ -180,7 +202,7 @@ export class UsersService {
 
             return false;
         } finally {
-            session.endSession().then(() => console.log("Session ended"));
+            session.endSession().then(() => console.log("Transaction ended"));
         }
     }
 
