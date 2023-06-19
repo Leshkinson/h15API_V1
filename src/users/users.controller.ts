@@ -45,7 +45,11 @@ export class UsersController {
                 searchEmailTerm,
                 banStatus,
             );
-            const totalCount: number = await this.queryService.getTotalCountForUsers(searchLoginTerm, searchEmailTerm);
+            const totalCount: number = await this.queryService.getTotalCountForUsers(
+                searchLoginTerm,
+                searchEmailTerm,
+                banStatus,
+            );
 
             res.status(HttpStatus.OK).json({
                 pagesCount: Math.ceil(totalCount / pageSize),

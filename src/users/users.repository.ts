@@ -31,7 +31,7 @@ export class UsersRepository {
         banStatus: any,
     ): Promise<IUser[]> {
         return this.userModel
-            .find({ $and: [{ $or: [searchLoginTerm, searchEmailTerm] }, { ...banStatus }] })
+            .find({ $and: [{ $or: [searchLoginTerm, searchEmailTerm] }, banStatus] })
             .sort({ [sortBy]: sortDirection })
             .skip(skip)
             .limit(limit);
@@ -87,8 +87,9 @@ export class UsersRepository {
     public async getUsersCount(
         searchLoginTerm: { login: { $regex: RegExp } } | NonNullable<unknown> = {},
         searchEmailTerm: { email: { $regex: RegExp } } | NonNullable<unknown> = {},
+        banStatus: any,
     ): Promise<number> {
-        return this.userModel.countDocuments({ $or: [searchLoginTerm, searchEmailTerm] });
+        return this.userModel.countDocuments({ $and: [{ $or: [searchLoginTerm, searchEmailTerm] }, banStatus] });
     }
 
     public async createUser(login: string, password: string, email: string): Promise<IUser> {

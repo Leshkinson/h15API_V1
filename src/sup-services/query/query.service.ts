@@ -20,6 +20,7 @@ import { LikesStatusCfgValues, LikesStatusType } from "./types/like.type";
 import { JWT, LIKE_STATUS, TagRepositoryTypeCfgValues } from "../../const/const";
 import { ILikeStatus, ILikeStatusWithoutId, UpgradeLikes } from "./interface/like.interface";
 import { CreatePostDto, CreatePostDtoWithoutIdAndName } from "../../posts/dto/create-post.dto";
+import { BanStatus } from "../../users/types/user.type";
 
 @Injectable()
 export class QueryService {
@@ -120,11 +121,17 @@ export class QueryService {
     public async getTotalCountForUsers(
         searchLoginTerm: string | undefined | object,
         searchEmailTerm: string | undefined | object,
+        banStatus: BanStatus = "all",
     ): Promise<number> {
+        const banStatusCFG = {
+            all: {},
+            banned: { isBanned: true },
+            notBanned: { isBanned: false },
+        };
         if (searchLoginTerm) searchLoginTerm = { login: { $regex: new RegExp(`.*${searchLoginTerm}.*`, "i") } };
         if (searchEmailTerm) searchEmailTerm = { email: { $regex: new RegExp(`.*${searchEmailTerm}.*`, "i") } };
 
-        return await this.userRepository.getUsersCount(searchLoginTerm, searchEmailTerm);
+        return await this.userRepository.getUsersCount(searchLoginTerm, searchEmailTerm, banStatusCFG[banStatus]);
     }
 
     public async getUpgradePosts(

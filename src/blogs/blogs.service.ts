@@ -68,7 +68,10 @@ export class BlogsService {
 
     public async update(id: RefType, userId: string, updateBlogDto: UpdateBlogDto): Promise<IBlog | undefined> {
         const blog = (await this.blogRepository.find(id)) as IBlogWithUserId;
-        if (!blog) throw new Error();
+        if (!blog) {
+            console.log("Here in !blog");
+            throw new Error();
+        }
         if (blog.userId === userId) {
             return await this.blogRepository.updateBlog(id, updateBlogDto);
         }
