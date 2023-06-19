@@ -48,8 +48,8 @@ export class UsersService {
     ): Promise<IUser[]> {
         const banStatusCFG = {
             all: {},
-            banned: { isBanned: true },
-            notBanned: { isBanned: false },
+            banned: { "banInfo.isBanned": true },
+            notBanned: { "banInfo.isBanned": false },
         };
         if (searchLoginTerm) searchLoginTerm = { login: { $regex: new RegExp(`.*${searchLoginTerm}.*`, "i") } };
         if (searchEmailTerm) searchEmailTerm = { email: { $regex: new RegExp(`.*${searchEmailTerm}.*`, "i") } };

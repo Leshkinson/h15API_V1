@@ -31,6 +31,7 @@ export class UsersController {
     @AuthGuard()
     public async getAllUsers(@Req() req: Request, @Res() res: Response) {
         try {
+            console.log("Here test");
             // eslint-disable-next-line prefer-const
             let { sortBy, sortDirection, pageNumber, pageSize, searchLoginTerm, searchEmailTerm, banStatus } =
                 req.query as UsersRequest;
