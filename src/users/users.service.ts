@@ -152,31 +152,20 @@ export class UsersService {
     }
 
     public async assigningBanToUser(id: RefType, banUserDto: BanUserDto) {
-        console.log("rgwergegeg");
         const candidateForBan = await this.userRepository.find(id);
         if (!candidateForBan) {
-            console.log("yerererer");
             throw new Error();
         }
 
         const banCondition = !candidateForBan.banInfo.isBanned && banUserDto.isBanned;
         const unBanCondition = candidateForBan.banInfo.isBanned && !banUserDto.isBanned;
-        console.log("yerererer2");
         if (!banCondition && !unBanCondition) {
-            console.log("false");
             return false;
         }
 
         const session = await mongoose.startSession();
         try {
             session.startTransaction();
-            // const banDate = new Date().toISOString();
-            // candidateForBan.banInfo.isBanned = banUserDto.isBanned;
-            // candidateForBan.banInfo.banDate = banDate;
-            // candidateForBan.banInfo.banReason = banUserDto.banReason;
-            // await candidateForBan.save();
-            //await this.userRepository.updateUserByBan(id, banUserDto);
-            // throw new Error();
             if (banCondition) {
                 const banDate = new Date().toISOString();
                 candidateForBan.banInfo.isBanned = banUserDto.isBanned;

@@ -81,7 +81,6 @@ export class UsersController {
     public async banOrUnban(@Param("id") id: string, @Body() banUserDto: BanUserDto, @Res() res: Response) {
         try {
             const userBan = await this.usersService.assigningBanToUser(id, banUserDto);
-            console.log("here");
             if (userBan) {
                 res.sendStatus(HttpStatus.NO_CONTENT);
                 return;

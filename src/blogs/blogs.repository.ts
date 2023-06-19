@@ -20,7 +20,13 @@ export class BlogsRepository {
         sortDirection: SortOrder = "desc",
         searchByUserId: { userId: string } | NonNullable<unknown>,
     ): Promise<IBlog[]> {
-        console.log("searchByUserId", searchByUserId);
+        if (Object.keys(searchByUserId).length === 0) {
+            return this.blogModel
+                .find({ $and: [searchNameTerm, searchByUserId] })
+                .sort({ [sortBy]: sortDirection })
+                .skip(skip)
+                .limit(limit);
+        }
         return this.blogModel
             .find({ $and: [searchNameTerm, searchByUserId] })
             .sort({ [sortBy]: sortDirection })
