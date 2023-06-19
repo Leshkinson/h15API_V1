@@ -7,8 +7,6 @@ export class BanListRepository {
     constructor(@Inject("BanList") private readonly banListModel: Model<IBanList>) {}
 
     public async addUserInBanList(userId: RefType | string): Promise<IBanList> {
-        console.log("userId in addUserInBanList", userId);
-        console.log("here addUserInBanList");
         return this.banListModel.create({ userId });
     }
 
@@ -17,8 +15,6 @@ export class BanListRepository {
     }
 
     public async deleteUserFromBanList(userId: RefType | string): Promise<void> {
-        console.log("userId in deleteUserFromBanList", userId);
-        console.log("here deleteUserFromBanList");
         return this.banListModel.findOneAndDelete({ userId });
     }
 }
