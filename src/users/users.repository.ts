@@ -30,6 +30,7 @@ export class UsersRepository {
         searchEmailTerm: { email: { $regex: RegExp } } | NonNullable<unknown> = {},
         banStatus: any,
     ): Promise<IUser[]> {
+        console.log("banStatus in findAll", banStatus);
         return this.userModel
             .find({ $and: [{ $or: [searchLoginTerm, searchEmailTerm] }, banStatus] })
             .sort({ [sortBy]: sortDirection })
@@ -89,6 +90,7 @@ export class UsersRepository {
         searchEmailTerm: { email: { $regex: RegExp } } | NonNullable<unknown> = {},
         banStatus: any,
     ): Promise<number> {
+        console.log("ban status in getUsersCount", banStatus);
         return this.userModel.countDocuments({ $and: [{ $or: [searchLoginTerm, searchEmailTerm] }, banStatus] });
     }
 
