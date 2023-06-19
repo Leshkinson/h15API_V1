@@ -14,6 +14,7 @@ import {
     Body,
     Controller,
     Delete,
+    ForbiddenException,
     Get,
     HttpStatus,
     NotFoundException,
@@ -94,9 +95,14 @@ export class BloggerBlogsController {
             if (updateBlog) {
                 res.sendStatus(HttpStatus.NO_CONTENT);
             }
+            //throw new ForbiddenException();
         } catch (error) {
             if (error instanceof Error) {
                 res.sendStatus(HttpStatus.NOT_FOUND);
+                console.log(error.message);
+            }
+            if (error instanceof ForbiddenException) {
+                res.sendStatus(HttpStatus.FORBIDDEN);
                 console.log(error.message);
             }
         }

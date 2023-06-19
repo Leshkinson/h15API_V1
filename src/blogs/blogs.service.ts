@@ -70,7 +70,7 @@ export class BlogsService {
         const blog = (await this.blogRepository.find(id)) as IBlogWithUserId;
         if (!blog) {
             console.log("Here in !blog");
-            throw new ForbiddenException();
+            throw new Error();
         }
         if (blog.userId === userId) {
             return await this.blogRepository.updateBlog(id, updateBlogDto);
