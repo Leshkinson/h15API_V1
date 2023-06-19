@@ -175,6 +175,7 @@ export class BloggerBlogsController {
 
                 return;
             }
+            throw new NotFoundException();
             //res.sendStatus(HttpStatus.FORBIDDEN);
         } catch (error) {
             if (error instanceof Error) {
