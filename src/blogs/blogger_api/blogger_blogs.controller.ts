@@ -171,10 +171,14 @@ export class BloggerBlogsController {
 
                 return;
             }
-            throw new NotFoundException();
+            //throw new NotFoundException();
         } catch (error) {
             if (error instanceof Error) {
                 res.sendStatus(HttpStatus.NOT_FOUND);
+                console.log(error.message);
+            }
+            if (error instanceof ForbiddenException) {
+                res.sendStatus(HttpStatus.FORBIDDEN);
                 console.log(error.message);
             }
         }
