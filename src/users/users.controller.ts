@@ -17,6 +17,7 @@ export class UsersController {
     public async create(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
         try {
             const newUser: IUser = await this.usersService.create(createUserDto);
+            console.log("newUser", newUser);
             res.status(HttpStatus.CREATED).json(newUser);
         } catch (error) {
             if (error instanceof Error) {
