@@ -88,6 +88,7 @@ export class UsersController {
     @AuthGuard()
     public async banOrUnban(@Param("id") id: string, @Body() banUserDto: BanUserDto, @Res() res: Response) {
         try {
+            console.log("banUserDto", banUserDto);
             const userBan = await this.usersService.assigningBanToUser(id, banUserDto);
             if (userBan) {
                 res.sendStatus(HttpStatus.NO_CONTENT);

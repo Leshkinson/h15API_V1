@@ -156,6 +156,7 @@ export class UsersService {
         if (!candidateForBan) {
             throw new Error();
         }
+        console.log("candidateForBan", candidateForBan);
 
         const banCondition = !candidateForBan.banInfo.isBanned && banUserDto.isBanned;
         const unBanCondition = candidateForBan.banInfo.isBanned && !banUserDto.isBanned;
@@ -167,13 +168,16 @@ export class UsersService {
         try {
             session.startTransaction();
             if (banCondition) {
+                console.log("here1");
                 const banDate = new Date().toISOString();
                 candidateForBan.banInfo.isBanned = banUserDto.isBanned;
                 candidateForBan.banInfo.banDate = banDate;
                 candidateForBan.banInfo.banReason = banUserDto.banReason;
                 await candidateForBan.save();
                 await this.banListRepository.addUserInBanList(id);
+                console.log("candidateForBan in transaction", candidateForBan);
             } else {
+                console.log("here2");
                 candidateForBan.banInfo.isBanned = banUserDto.isBanned;
                 candidateForBan.banInfo.banDate = null;
                 candidateForBan.banInfo.banReason = null;
