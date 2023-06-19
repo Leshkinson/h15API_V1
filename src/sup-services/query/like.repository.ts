@@ -2,6 +2,7 @@ import { Model, RefType } from "mongoose";
 import { Inject, Injectable } from "@nestjs/common";
 import { LikesStatusType } from "./types/like.type";
 import { ILikeStatus, ILikeStatusWithoutId } from "./interface/like.interface";
+import { IBanList } from "./interface/ban-list.interface";
 
 @Injectable()
 export class LikesRepository {
@@ -38,8 +39,20 @@ export class LikesRepository {
             .lean();
     }
 
-    public async countingLikeOrDislike(commentOrPostId: string, param: string): Promise<number> {
-        return this.likeModel.find({ $and: [{ commentOrPostId: commentOrPostId }, { likeStatus: param }] }).count();
+    public async countingLikeOrDislike(
+        commentOrPostId: string,
+        param: string,
+        arrayInBanList: IBanList[],
+    ): Promise<number> {
+        return this.likeModel
+            .find({
+                $and: [
+                    { commentOrPostId: commentOrPostId },
+                    { likeStatus: param },
+                    { userId: { $nin: arrayInBanList } },
+                ],
+            })
+            .count();
     }
 
     public async deleteAll() {

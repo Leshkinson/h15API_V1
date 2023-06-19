@@ -21,6 +21,8 @@ import { JWT, LIKE_STATUS, TagRepositoryTypeCfgValues } from "../../const/const"
 import { ILikeStatus, ILikeStatusWithoutId, UpgradeLikes } from "./interface/like.interface";
 import { CreatePostDto, CreatePostDtoWithoutIdAndName } from "../../posts/dto/create-post.dto";
 import { BanStatus } from "../../users/types/user.type";
+import { BanListRepository } from "./ban-list.repository";
+import { BanListModel } from "./schema/ban-list.schema";
 
 @Injectable()
 export class QueryService {
@@ -31,12 +33,14 @@ export class QueryService {
         @Inject("likeRepository") private readonly likeRepository: LikesRepository,
         @Inject("userRepository") private readonly userRepository: UsersRepository,
         @Inject("commentRepository") private readonly commentRepository: CommentsRepository,
+        @Inject("banListRepository") private readonly banListRepository: BanListRepository,
     ) {
         this.postRepository = new PostsRepository(PostModel);
         this.blogRepository = new BlogsRepository(BlogModel);
         this.likeRepository = new LikesRepository(LikeModel);
         this.userRepository = new UsersRepository(UserModel);
         this.commentRepository = new CommentsRepository(CommentModel);
+        this.banListRepository = new BanListRepository(BanListModel);
     }
 
     public async getTotalCountPostsForTheBlog(blogId: RefType): Promise<number> {
@@ -219,7 +223,9 @@ export class QueryService {
             commentOrPost = await this.commentRepository.find(id);
         }
         if (commentOrPost) {
-            return await this.likeRepository.countingLikeOrDislike(String(commentOrPost._id), param);
+            const arrayInBanList = await this.banListRepository.findAllUserInBanList();
+            console.log("arrayInBanList", arrayInBanList);
+            return await this.likeRepository.countingLikeOrDislike(String(commentOrPost._id), param, arrayInBanList);
         }
 
         throw new Error();

@@ -13,6 +13,8 @@ import { SessionsModule } from "./sessions/sessions.module";
 import { QueryService } from "./sup-services/query/query.service";
 import { CommentsRepository } from "./comments/comments.repository";
 import { LikesRepository } from "./sup-services/query/like.repository";
+import { BanListRepository } from "./sup-services/query/ban-list.repository";
+import { banListProviders } from "./sup-services/query/ban-list.providers";
 
 @Module({
     imports: [BlogsModule, PostsModule, DatabaseModule, CommentsModule, SessionsModule, AuthModule, UsersModule],
@@ -38,6 +40,10 @@ import { LikesRepository } from "./sup-services/query/like.repository";
         {
             provide: "commentRepository",
             useValue: CommentsRepository,
+        },
+        {
+            provide: "banListRepository",
+            useValue: BanListRepository,
         },
     ],
 })

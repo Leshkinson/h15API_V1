@@ -21,6 +21,8 @@ import { LikesRepository } from "../sup-services/query/like.repository";
 import { BloggerBlogsController } from "./blogger_api/blogger_blogs.controller";
 import { PublicBlogsController } from "./public_api/public_blogs.controller";
 import { SABlogsController } from "./super_admin_api/sa_blogs.controller";
+import { BanListRepository } from "../sup-services/query/ban-list.repository";
+import { banListProviders } from "../sup-services/query/ban-list.providers";
 
 @Module({
     imports: [DatabaseModule],
@@ -55,6 +57,11 @@ import { SABlogsController } from "./super_admin_api/sa_blogs.controller";
             provide: "sessionRepository",
             useValue: SessionsRepository,
         },
+        {
+            provide: "banListRepository",
+            useValue: BanListRepository,
+        },
+        ...banListProviders,
         ...blogsProviders,
         ...likesProviders,
         ...postsProviders,
