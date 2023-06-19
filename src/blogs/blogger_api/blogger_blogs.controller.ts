@@ -39,7 +39,7 @@ export class BloggerBlogsController {
             let { pageNumber, pageSize, sortBy, searchNameTerm, sortDirection } = req.query as BlogsRequest;
             pageNumber = Number(pageNumber ?? 1);
             pageSize = Number(pageSize ?? 10);
-            const blogs: IBlog[] = await this.blogsService.findAllBlogs(
+            const blogs: IBlog[] = await this.blogsService.findAllBlogsForBloggers(
                 searchNameTerm,
                 pageNumber,
                 pageSize,

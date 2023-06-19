@@ -20,19 +20,27 @@ export class BlogsRepository {
         sortDirection: SortOrder = "desc",
         searchByUserId: { userId: string } | NonNullable<unknown>,
     ): Promise<IBlog[]> {
-        if (Object.keys(searchByUserId).length === 0) {
-            return this.blogModel
-                .find({ $and: [searchNameTerm, searchByUserId] })
-                .sort({ [sortBy]: sortDirection })
-                .skip(skip)
-                .limit(limit);
-        }
         return this.blogModel
             .find({ $and: [searchNameTerm, searchByUserId] })
             .sort({ [sortBy]: sortDirection })
             .skip(skip)
             .limit(limit)
             .lean();
+    }
+
+    public async findAllForBlogger(
+        searchNameTerm: { name: { $regex: RegExp } } | NonNullable<unknown> = {},
+        skip = 0,
+        limit = 10,
+        sortBy = "createdAt",
+        sortDirection: SortOrder = "desc",
+        searchByUserId: { userId: string } | NonNullable<unknown>,
+    ): Promise<IBlog[]> {
+        return this.blogModel
+            .find({ $and: [searchNameTerm, searchByUserId] })
+            .sort({ [sortBy]: sortDirection })
+            .skip(skip)
+            .limit(limit);
     }
 
     public async find(id: RefType): Promise<IBlog | IBlogWithUserId | null> {

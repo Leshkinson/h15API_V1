@@ -34,6 +34,31 @@ export class BlogsService {
         return this.blogRepository.findAll(searchNameTerm, skip, pageSize, sortBy, sortDirection, searchByUserId);
     }
 
+    public async findAllBlogsForBloggers(
+        searchNameTerm: string | undefined | object,
+        pageNumber = 1,
+        pageSize = 10,
+        sortBy = "createdAt",
+        sortDirection: SortOrder | undefined = "desc",
+        userId: string | null,
+    ): Promise<IBlog[]> {
+        if (searchNameTerm)
+            searchNameTerm = {
+                name: { $regex: new RegExp(`.*${searchNameTerm}.*`, "i") },
+            };
+        let searchByUserId;
+        userId ? (searchByUserId = { userId: userId }) : (searchByUserId = {});
+        const skip = Number((pageNumber - 1) * pageSize);
+        return this.blogRepository.findAllForBlogger(
+            searchNameTerm,
+            skip,
+            pageSize,
+            sortBy,
+            sortDirection,
+            searchByUserId,
+        );
+    }
+
     public async findOne(id: RefType | string): Promise<IBlog | undefined> {
         const blog = await this.blogRepository.find(id);
         if (!blog) throw new Error();
