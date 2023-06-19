@@ -91,6 +91,7 @@ export class BloggerBlogsController {
         try {
             const request = req as RequestWithUser;
             const { userId } = request.user;
+            console.log("userId in controller", userId);
             const updateBlog = await this.blogsService.update(id, userId, updateBlogDto);
             if (updateBlog) {
                 res.sendStatus(HttpStatus.NO_CONTENT);
@@ -160,6 +161,7 @@ export class BloggerBlogsController {
         try {
             const request = req as RequestWithUser;
             const { userId } = request.user;
+            console.log("userId in query", userId);
             const updatePost: IPost | undefined = await this.queryService.updatePostForTheBlog(
                 postId,
                 blogId,

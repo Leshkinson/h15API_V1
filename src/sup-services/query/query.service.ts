@@ -72,6 +72,7 @@ export class QueryService {
         updatePostDtoByQuery: UpdatePostDtoByQuery,
     ) {
         const blog = (await this.blogRepository.find(blogId)) as IBlogWithUserId;
+        console.log("blog in updatePostForTheBlog", blog);
         if (!blog) throw new Error();
         if (blog.userId === userId) {
             const postForLaterUpdate = await this.postRepository.findByPostIdAndBlogId(postId, blogId);
