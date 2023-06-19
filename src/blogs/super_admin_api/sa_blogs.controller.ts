@@ -3,7 +3,7 @@ import { BlogsService } from "../blogs.service";
 import { QueryService } from "../../sup-services/query/query.service";
 import { Request, Response } from "express";
 import { BlogsRequest } from "../types/blog.type";
-import { IBlog, IBlogWithUserId } from "../interface/blog.interface";
+import { IBlog } from "../interface/blog.interface";
 import { AuthGuard } from "../../auth.guard";
 
 @Controller("sa/blogs")

@@ -3,7 +3,7 @@ import { AccessGuard } from "./access.guard";
 import { AuthService } from "./auth.service";
 import { RefreshGuard } from "./refresh.guard";
 import { UsersService } from "../users/users.service";
-import { RateLimiterGuard } from "./rate-limiter.guard";
+//import { RateLimiterGuard } from "./rate-limiter.guard";
 import { TokenMapper } from "./dto/mapper/token-mapper";
 import { RequestWithUser } from "./interface/auth.interface";
 import { SessionsService } from "../sessions/sessions.service";

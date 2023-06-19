@@ -10,7 +10,20 @@ import { RequestWithUser } from "../../auth/interface/auth.interface";
 import { QueryService } from "../../sup-services/query/query.service";
 import { UpdatePostDtoByQuery } from "../../posts/dto/update-post.dto";
 import { CreatePostDtoWithoutIdAndName } from "../../posts/dto/create-post.dto";
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res, UseGuards } from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpStatus,
+    NotFoundException,
+    Param,
+    Post,
+    Put,
+    Req,
+    Res,
+    UseGuards,
+} from "@nestjs/common";
 
 @Controller("blogger/blogs")
 export class BloggerBlogsController {
@@ -149,7 +162,10 @@ export class BloggerBlogsController {
             );
             if (updatePost) {
                 res.sendStatus(HttpStatus.NO_CONTENT);
+
+                return;
             }
+            throw new NotFoundException();
         } catch (error) {
             if (error instanceof Error) {
                 res.sendStatus(HttpStatus.NOT_FOUND);
@@ -171,7 +187,10 @@ export class BloggerBlogsController {
             const deleteBlog = await this.queryService.deletePostForTheBlog(postId, blogId, userId);
             if (deleteBlog) {
                 res.sendStatus(HttpStatus.NO_CONTENT);
+
+                return;
             }
+            throw new NotFoundException();
         } catch (error) {
             if (error instanceof Error) {
                 res.sendStatus(HttpStatus.NOT_FOUND);
