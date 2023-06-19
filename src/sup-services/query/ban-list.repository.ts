@@ -13,7 +13,7 @@ export class BanListRepository {
     }
 
     public async findAllUserInBanList(): Promise<IBanList[]> {
-        return this.banListModel.find({}, { _id: 0 });
+        return this.banListModel.find();
     }
 
     public async deleteUserFromBanList(userId: RefType | string): Promise<void> {
