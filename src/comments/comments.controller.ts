@@ -24,16 +24,12 @@ export class CommentsController {
     @Get(":id")
     async findOne(@Param("id") id: string, @Req() req: Request, @Res() res: Response) {
         try {
-            console.log("here in comments");
             const token = req.headers.authorization?.split(" ")[1];
             const findComment: IComment | undefined = await this.commentsService.getOne(id);
-            console.log("findComment", findComment);
             if (findComment) {
                 if (token) {
-                    console.log("token in comments", token);
                     const payload = (await this.authService.getPayloadByAccessToken(token)) as JWT;
                     const user = await this.usersService.getUserById(payload.id);
-                    console.log("user in comments", user);
                     if (user.banInfo.isBanned) throw new Error();
                     if (user) {
                         findComment.likesInfo.likesCount = await this.queryService.getTotalCountLikeOrDislike(
@@ -68,6 +64,7 @@ export class CommentsController {
                     LIKE_STATUS.DISLIKE,
                     TAG_REPOSITORY.CommentsRepository,
                 );
+                console.log("findComment", findComment);
                 res.status(HttpStatus.OK).json(findComment);
             }
         } catch (error) {
