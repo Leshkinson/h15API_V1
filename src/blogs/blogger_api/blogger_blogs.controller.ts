@@ -161,7 +161,7 @@ export class BloggerBlogsController {
             const request = req as RequestWithUser;
             const { userId } = request.user;
             console.log("userId in query", userId);
-            const updatePost: IPost | undefined = await this.queryService.updatePostForTheBlog(
+            const updatePost: IPost | undefined | boolean = await this.queryService.updatePostForTheBlog(
                 postId,
                 blogId,
                 userId,

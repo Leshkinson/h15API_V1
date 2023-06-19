@@ -79,7 +79,7 @@ export class QueryService {
             if (postForLaterUpdate) {
                 return await this.postRepository.updatePostByQueryService(postId, updatePostDtoByQuery);
             }
-            throw new ForbiddenException();
+            return false;
         }
         throw new ForbiddenException();
     }
