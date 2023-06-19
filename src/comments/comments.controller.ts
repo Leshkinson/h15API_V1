@@ -30,6 +30,7 @@ export class CommentsController {
                 if (token) {
                     const payload = (await this.authService.getPayloadByAccessToken(token)) as JWT;
                     const user = await this.usersService.getUserById(payload.id);
+                    console.log("user in comments", user);
                     if (user.banInfo.isBanned) throw new Error();
                     if (user) {
                         findComment.likesInfo.likesCount = await this.queryService.getTotalCountLikeOrDislike(
