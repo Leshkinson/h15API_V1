@@ -95,6 +95,8 @@ export class BloggerBlogsController {
             const updateBlog = await this.blogsService.update(id, userId, updateBlogDto);
             if (updateBlog) {
                 res.sendStatus(HttpStatus.NO_CONTENT);
+
+                return;
             }
             res.sendStatus(HttpStatus.FORBIDDEN);
         } catch (error) {
