@@ -35,7 +35,7 @@ export class UsersController {
                 req.query as UsersRequest;
             pageNumber = Number(pageNumber ?? 1);
             pageSize = Number(pageSize ?? 10);
-
+            console.log("banStatus in query", banStatus);
             const users: IUser[] = await this.usersService.findAllUsers(
                 sortBy,
                 sortDirection,
