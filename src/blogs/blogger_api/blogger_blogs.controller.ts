@@ -171,7 +171,7 @@ export class BloggerBlogsController {
 
                 return;
             }
-            //throw new NotFoundException();
+            throw new NotFoundException();
         } catch (error) {
             if (error instanceof Error) {
                 res.sendStatus(HttpStatus.NOT_FOUND);
