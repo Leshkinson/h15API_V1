@@ -99,7 +99,7 @@ export class BloggerBlogsController {
             //throw new ForbiddenException();
         } catch (error) {
             if (error instanceof Error) {
-                res.sendStatus(HttpStatus.NOT_FOUND);
+                res.sendStatus(HttpStatus.FORBIDDEN);
                 console.log(error.message);
             }
         }
@@ -172,7 +172,7 @@ export class BloggerBlogsController {
             throw new ForbiddenException();
         } catch (error) {
             if (error instanceof Error) {
-                res.sendStatus(HttpStatus.NOT_FOUND);
+                res.sendStatus(HttpStatus.FORBIDDEN);
                 console.log(error.message);
             }
         }
