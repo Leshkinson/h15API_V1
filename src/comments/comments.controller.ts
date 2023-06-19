@@ -56,6 +56,8 @@ export class CommentsController {
                         return;
                     }
                 }
+                const user = await this.usersService.getUserById(findComment.commentatorInfo.userId);
+                if (user.banInfo.isBanned) throw new Error();
                 findComment.likesInfo.likesCount = await this.queryService.getTotalCountLikeOrDislike(
                     id,
                     LIKE_STATUS.LIKE,
