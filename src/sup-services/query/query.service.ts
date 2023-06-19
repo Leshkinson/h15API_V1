@@ -73,10 +73,6 @@ export class QueryService {
     ) {
         const blog = (await this.blogRepository.find(blogId)) as IBlogWithUserId;
         if (!blog) throw new Error();
-        // const user = await this.userRepository.find(userId);
-        // if (user.banInfo.isBanned) {
-        //     throw new ForbiddenException();
-        // }
         if (blog.userId === userId) {
             const postForLaterUpdate = await this.postRepository.findByPostIdAndBlogId(postId, blogId);
             if (postForLaterUpdate) {
@@ -90,10 +86,6 @@ export class QueryService {
     public async deletePostForTheBlog(postId: string, blogId: string, userId: string) {
         const blog = (await this.blogRepository.find(blogId)) as IBlogWithUserId;
         if (!blog) throw new Error();
-        // const user = await this.userRepository.find(userId);
-        // if (user.banInfo.isBanned) {
-        //     throw new ForbiddenException();
-        // }
         if (blog.userId === userId) {
             const postForLaterUpdate = await this.postRepository.findByPostIdAndBlogId(postId, blogId);
             if (postForLaterUpdate) {
