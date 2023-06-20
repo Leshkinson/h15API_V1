@@ -1,12 +1,12 @@
 import { AuthGuard } from "../auth.guard";
 import { Request, Response } from "express";
 import { UsersService } from "./users.service";
+import { BanUserDto } from "./dto/ban-user.dto";
 import { UsersRequest } from "./types/user.type";
 import { IUser } from "./interface/user.interface";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { QueryService } from "../sup-services/query/query.service";
 import { Controller, Get, Post, Body, Param, Delete, Res, Req, HttpStatus, Put } from "@nestjs/common";
-import { BanUserDto } from "./dto/ban-user.dto";
 
 @Controller("sa/users")
 export class UsersController {
@@ -17,7 +17,6 @@ export class UsersController {
     public async create(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
         try {
             const newUser: IUser = await this.usersService.create(createUserDto);
-            console.log("newUser", newUser);
             res.status(HttpStatus.CREATED).json(newUser);
         } catch (error) {
             if (error instanceof Error) {
@@ -31,13 +30,11 @@ export class UsersController {
     @AuthGuard()
     public async getAllUsers(@Req() req: Request, @Res() res: Response) {
         try {
-            console.log("Here test");
             // eslint-disable-next-line prefer-const
             let { sortBy, sortDirection, pageNumber, pageSize, searchLoginTerm, searchEmailTerm, banStatus } =
                 req.query as UsersRequest;
             pageNumber = Number(pageNumber ?? 1);
             pageSize = Number(pageSize ?? 10);
-            console.log("banStatus in query", banStatus);
             const users: IUser[] = await this.usersService.findAllUsers(
                 sortBy,
                 sortDirection,
@@ -47,14 +44,11 @@ export class UsersController {
                 searchEmailTerm,
                 banStatus,
             );
-            console.log("users", users);
             const totalCount: number = await this.queryService.getTotalCountForUsers(
                 searchLoginTerm,
                 searchEmailTerm,
                 banStatus,
             );
-
-            console.log("totalCount", totalCount);
 
             res.status(HttpStatus.OK).json({
                 pagesCount: Math.ceil(totalCount / pageSize),
@@ -89,7 +83,6 @@ export class UsersController {
     @AuthGuard()
     public async banOrUnban(@Param("id") id: string, @Body() banUserDto: BanUserDto, @Res() res: Response) {
         try {
-            console.log("banUserDto", banUserDto);
             const userBan = await this.usersService.assigningBanToUser(id, banUserDto);
             if (userBan) {
                 res.sendStatus(HttpStatus.NO_CONTENT);

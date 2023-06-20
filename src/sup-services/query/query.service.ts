@@ -2,6 +2,10 @@ import { RefType, SortOrder } from "mongoose";
 import { LikeModel } from "./schema/like.schema";
 import { LikesRepository } from "./like.repository";
 import { AuthService } from "../../auth/auth.service";
+import { BanStatus } from "../../users/types/user.type";
+import { BanListModel } from "./schema/ban-list.schema";
+import { BanListRepository } from "./ban-list.repository";
+import { IBanList } from "./interface/ban-list.interface";
 import { UserModel } from "../../users/schema/user.schema";
 import { PostModel } from "../../posts/schema/post.schema";
 import { BlogModel } from "../../blogs/schema/blog.schema";
@@ -13,17 +17,13 @@ import { UsersRepository } from "../../users/users.repository";
 import { CommentModel } from "../../comments/schema/comments.schema";
 import { IComment } from "../../comments/interface/comment.interface";
 import { UpdatePostDtoByQuery } from "../../posts/dto/update-post.dto";
-import { IBlog, IBlogWithBlogOwnerInfo, IBlogWithUserId } from "../../blogs/interface/blog.interface";
 import { ForbiddenException, Inject, Injectable } from "@nestjs/common";
 import { CommentsRepository } from "../../comments/comments.repository";
 import { LikesStatusCfgValues, LikesStatusType } from "./types/like.type";
 import { JWT, LIKE_STATUS, TagRepositoryTypeCfgValues } from "../../const/const";
 import { ILikeStatus, ILikeStatusWithoutId, UpgradeLikes } from "./interface/like.interface";
 import { CreatePostDto, CreatePostDtoWithoutIdAndName } from "../../posts/dto/create-post.dto";
-import { BanStatus } from "../../users/types/user.type";
-import { BanListRepository } from "./ban-list.repository";
-import { BanListModel } from "./schema/ban-list.schema";
-import { IBanList } from "./interface/ban-list.interface";
+import { IBlog, IBlogWithBlogOwnerInfo, IBlogWithUserId } from "../../blogs/interface/blog.interface";
 
 @Injectable()
 export class QueryService {
@@ -77,7 +77,6 @@ export class QueryService {
         updatePostDtoByQuery: UpdatePostDtoByQuery,
     ) {
         const blog = (await this.blogRepository.find(blogId)) as IBlogWithUserId;
-        console.log("blog in updatePostForTheBlog", blog);
         if (!blog) throw new Error();
         if (blog.userId === userId) {
             const postForLaterUpdate = await this.postRepository.findByPostIdAndBlogId(postId, blogId);
