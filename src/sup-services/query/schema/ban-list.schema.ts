@@ -3,7 +3,7 @@ import { IBanList } from "../interface/ban-list.interface";
 
 export const BanListSchema = new Schema(
     {
-        userId: { type: mongoose.Types.ObjectId, ref: "User" },
+        userId: { type: mongoose.Types.ObjectId, required: true },
     },
     { timestamps: true },
 );
@@ -14,6 +14,9 @@ BanListSchema.set("toJSON", {
         delete dto._id;
         delete dto.__v;
         delete dto.updatedAt;
+        return dto.map((list) => {
+            return list.userId;
+        });
     },
 });
 
