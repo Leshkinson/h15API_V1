@@ -1,7 +1,7 @@
 import { RefType, SortOrder } from "mongoose";
 import { BlogModel } from "./schema/blog.schema";
 import { IBlog, IBlogWithUserId } from "./interface/blog.interface";
-import { ForbiddenException, Inject, Injectable } from "@nestjs/common";
+import { ForbiddenException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { BlogsRepository } from "./blogs.repository";
 import { CreateBlogDto } from "./dto/create-blog.dto";
 import { UpdateBlogDto } from "./dto/update-blog.dto";
@@ -68,11 +68,7 @@ export class BlogsService {
 
     public async update(id: RefType, userId: string, updateBlogDto: UpdateBlogDto): Promise<IBlog | undefined> {
         const blog = (await this.blogRepository.find(id)) as IBlogWithUserId;
-        console.log("blog in update", blog);
-        if (!blog) {
-            console.log("Here in !blog");
-            throw new Error();
-        }
+        if (!blog) throw new NotFoundException();
         if (blog.userId === userId) {
             return await this.blogRepository.updateBlog(id, updateBlogDto);
         }
