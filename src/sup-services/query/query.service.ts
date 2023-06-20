@@ -23,6 +23,7 @@ import { CreatePostDto, CreatePostDtoWithoutIdAndName } from "../../posts/dto/cr
 import { BanStatus } from "../../users/types/user.type";
 import { BanListRepository } from "./ban-list.repository";
 import { BanListModel } from "./schema/ban-list.schema";
+import { IBanList } from "./interface/ban-list.interface";
 
 @Injectable()
 export class QueryService {
@@ -224,7 +225,10 @@ export class QueryService {
         }
         if (commentOrPost) {
             const arrayInBanList = await this.banListRepository.findAllUserInBanList();
-            console.log("arrayInBanList", arrayInBanList);
+            const arrayUserIdBanList = arrayInBanList.map((item: IBanList) => {
+                return item.userId;
+            });
+            console.log("arrayUserIdBanList", arrayUserIdBanList);
             return await this.likeRepository.countingLikeOrDislike(String(commentOrPost._id), param, arrayInBanList);
         }
 
