@@ -77,7 +77,7 @@ export class BlogsService {
 
     public async delete(id: RefType, userId: string): Promise<IBlog> {
         const blog = (await this.blogRepository.find(id)) as IBlogWithUserId;
-        if (!blog) throw new Error();
+        if (!blog) throw new NotFoundException();
         if (blog.userId === userId) {
             return await this.blogRepository.delete(id);
         }

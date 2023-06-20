@@ -99,7 +99,6 @@ export class BloggerBlogsController {
                 return;
             }
             throw new NotFoundException();
-            //res.sendStatus(HttpStatus.FORBIDDEN);
         } catch (error) {
             if (error instanceof NotFoundException) {
                 console.log("here Error");
@@ -126,9 +125,17 @@ export class BloggerBlogsController {
                 res.sendStatus(HttpStatus.NO_CONTENT);
             }
         } catch (error) {
-            if (error instanceof Error) {
+            if (error instanceof NotFoundException) {
+                console.log("here Error");
                 res.sendStatus(HttpStatus.NOT_FOUND);
                 console.log(error.message);
+                return;
+            }
+            if (error instanceof ForbiddenException) {
+                console.log("here ForbiddenException");
+                res.sendStatus(HttpStatus.FORBIDDEN);
+                console.log(error.message);
+                return;
             }
         }
     }
@@ -189,7 +196,6 @@ export class BloggerBlogsController {
                 return;
             }
             throw new NotFoundException();
-            //res.sendStatus(HttpStatus.FORBIDDEN);
         } catch (error) {
             if (error instanceof NotFoundException) {
                 console.log("here Error");
