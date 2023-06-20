@@ -83,7 +83,7 @@ export class PostsController {
                     token,
                     TAG_REPOSITORY.PostsRepository,
                 );
-
+                console.log("newFindPost", newFindPost);
                 res.status(HttpStatus.OK).json(newFindPost);
             }
         } catch (error) {
