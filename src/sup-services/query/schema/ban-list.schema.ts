@@ -14,9 +14,6 @@ BanListSchema.set("toJSON", {
         delete dto._id;
         delete dto.__v;
         delete dto.updatedAt;
-        return dto.map((list) => {
-            return list.userId;
-        });
     },
 });
 
