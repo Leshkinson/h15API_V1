@@ -224,10 +224,7 @@ export class QueryService {
             commentOrPost = await this.commentRepository.find(id);
         }
         if (commentOrPost) {
-            const arrayInBanList = await this.banListRepository.findAllUserInBanList();
-            const arrayUserIdBanList = arrayInBanList.map((item: IBanList) => {
-                return item.userId.toString();
-            });
+            const arrayUserIdBanList = await this.getArrayUserIdBanList();
             return await this.likeRepository.countingLikeOrDislike(
                 String(commentOrPost._id),
                 param,
@@ -260,8 +257,16 @@ export class QueryService {
         return result.filter((item: UpgradeLikes | undefined) => !!item);
     }
 
+    public async getArrayUserIdBanList(): Promise<string[]> {
+        const arrayInBanList = await this.banListRepository.findAllUserInBanList();
+        return arrayInBanList.map((item: IBanList) => {
+            return item.userId.toString();
+        });
+    }
+
     public async getLikes(id: string): Promise<ILikeStatus[] | ILikeStatusWithoutId[] | null> {
-        return await this.likeRepository.findLikes(id);
+        const arrayUserIdBanList = await this.getArrayUserIdBanList();
+        return await this.likeRepository.findLikes(id, arrayUserIdBanList);
     }
 
     public async setUpLikeOrDislikeStatus(

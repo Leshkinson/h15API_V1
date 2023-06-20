@@ -31,9 +31,15 @@ export class LikesRepository {
         return this.likeModel.findById(id);
     }
 
-    public async findLikes(id: RefType): Promise<ILikeStatus[] | ILikeStatusWithoutId[] | null> {
+    public async findLikes(
+        id: RefType,
+        arrayUserIdBanList: string[],
+    ): Promise<ILikeStatus[] | ILikeStatusWithoutId[] | null> {
         return this.likeModel
-            .find({ $and: [{ commentOrPostId: id }, { likeStatus: "Like" }] }, { _id: 0 })
+            .find(
+                { $and: [{ commentOrPostId: id }, { likeStatus: "Like" }, { userId: { $nin: arrayUserIdBanList } }] },
+                { _id: 0 },
+            )
             .sort({ createdAt: "desc" })
             .limit(3)
             .lean();
@@ -42,14 +48,14 @@ export class LikesRepository {
     public async countingLikeOrDislike(
         commentOrPostId: string,
         param: string,
-        arrayInBanList: string[],
+        arrayUserIdBanList: string[],
     ): Promise<number> {
         return this.likeModel
             .find({
                 $and: [
                     { commentOrPostId: commentOrPostId },
                     { likeStatus: param },
-                    { userId: { $nin: arrayInBanList } },
+                    { userId: { $nin: arrayUserIdBanList } },
                 ],
             })
             .count();
