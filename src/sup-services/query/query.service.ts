@@ -83,8 +83,10 @@ export class QueryService {
             if (postForLaterUpdate) {
                 return await this.postRepository.updatePostByQueryService(postId, updatePostDtoByQuery);
             }
-            return false;
+            console.log("here if !postForLaterUpdate");
+            throw new ForbiddenException();
         }
+        console.log("here if blog.userId !== userId");
         throw new ForbiddenException();
     }
 
