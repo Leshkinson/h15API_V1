@@ -179,7 +179,7 @@ export class BloggerBlogsController {
             //res.sendStatus(HttpStatus.FORBIDDEN);
         } catch (error) {
             if (error instanceof Error) {
-                res.sendStatus(HttpStatus.FORBIDDEN);
+                res.sendStatus(HttpStatus.NOT_FOUND);
                 console.log(error.message);
                 return;
             }
