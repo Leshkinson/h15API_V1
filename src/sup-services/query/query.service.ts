@@ -92,13 +92,13 @@ export class QueryService {
 
     public async deletePostForTheBlog(postId: string, blogId: string, userId: string) {
         const blog = (await this.blogRepository.find(blogId)) as IBlogWithUserId;
-        if (!blog) throw new Error();
+        if (!blog) throw new NotFoundException();
         if (blog.userId === userId) {
             const postForLaterUpdate = await this.postRepository.findByPostIdAndBlogId(postId, blogId);
             if (postForLaterUpdate) {
                 return await this.postRepository.deletePost(postId);
             }
-            throw new Error();
+            throw new ForbiddenException();
         }
         throw new ForbiddenException();
     }
