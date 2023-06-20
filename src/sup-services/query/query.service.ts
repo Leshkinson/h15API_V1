@@ -226,10 +226,14 @@ export class QueryService {
         if (commentOrPost) {
             const arrayInBanList = await this.banListRepository.findAllUserInBanList();
             const arrayUserIdBanList = arrayInBanList.map((item: IBanList) => {
-                return item.userId;
+                return item.userId.toString();
             });
             console.log("arrayUserIdBanList", arrayUserIdBanList);
-            return await this.likeRepository.countingLikeOrDislike(String(commentOrPost._id), param, arrayInBanList);
+            return await this.likeRepository.countingLikeOrDislike(
+                String(commentOrPost._id),
+                param,
+                arrayUserIdBanList,
+            );
         }
 
         throw new Error();

@@ -42,7 +42,7 @@ export class LikesRepository {
     public async countingLikeOrDislike(
         commentOrPostId: string,
         param: string,
-        arrayInBanList: IBanList[],
+        arrayInBanList: string[],
     ): Promise<number> {
         return this.likeModel
             .find({
