@@ -17,7 +17,7 @@ import { UsersRepository } from "../../users/users.repository";
 import { CommentModel } from "../../comments/schema/comments.schema";
 import { IComment } from "../../comments/interface/comment.interface";
 import { UpdatePostDtoByQuery } from "../../posts/dto/update-post.dto";
-import { ForbiddenException, Inject, Injectable } from "@nestjs/common";
+import { ForbiddenException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { CommentsRepository } from "../../comments/comments.repository";
 import { LikesStatusCfgValues, LikesStatusType } from "./types/like.type";
 import { JWT, LIKE_STATUS, TagRepositoryTypeCfgValues } from "../../const/const";
@@ -77,7 +77,7 @@ export class QueryService {
         updatePostDtoByQuery: UpdatePostDtoByQuery,
     ) {
         const blog = (await this.blogRepository.find(blogId)) as IBlogWithUserId;
-        if (!blog) throw new Error();
+        if (!blog) throw new NotFoundException();
         if (blog.userId === userId) {
             const postForLaterUpdate = await this.postRepository.findByPostIdAndBlogId(postId, blogId);
             if (postForLaterUpdate) {
