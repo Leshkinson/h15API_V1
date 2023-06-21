@@ -23,9 +23,14 @@ import { PublicBlogsController } from "./public_api/public_blogs.controller";
 import { SABlogsController } from "./super_admin_api/sa_blogs.controller";
 import { BanListRepository } from "../sup-services/query/ban-list.repository";
 import { banListProviders } from "../sup-services/query/ban-list.providers";
+//import { FindOneBlogUseCase } from "./use-cases/find-one-blog-use-case";
+import { CommandBus, CqrsModule, QueryBus } from "@nestjs/cqrs";
+import { FindOneBlogHandler } from "./use-cases/find-one-blog-use-case";
+
+//const useCases = [FindOneBlogUseCase];
 
 @Module({
-    imports: [DatabaseModule],
+    imports: [DatabaseModule, CqrsModule],
     controllers: [BloggerBlogsController, PublicBlogsController, SABlogsController],
     providers: [
         BlogsService,
@@ -68,6 +73,8 @@ import { banListProviders } from "../sup-services/query/ban-list.providers";
         ...usersProviders,
         ...commentsProviders,
         ...sessionsProviders,
+        FindOneBlogHandler,
+        //...useCases,
     ],
     exports: [BlogsService],
 })

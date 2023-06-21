@@ -43,7 +43,7 @@ export class BlogsRepository {
             .limit(limit);
     }
 
-    public async find(id: RefType): Promise<IBlog | IBlogWithUserId | null> {
+    public async find(id: RefType | string): Promise<IBlog | IBlogWithUserId | null> {
         return this.blogModel.findById({ _id: id });
     }
 

@@ -1,15 +1,21 @@
-import { Controller, Get, HttpStatus, Param, Req, Res } from "@nestjs/common";
-import { BlogsService } from "../blogs.service";
-import { QueryService } from "../../sup-services/query/query.service";
 import { Request, Response } from "express";
-import { BlogsRequest, BlogsRequestWithoutSNT } from "../types/blog.type";
+import { BlogsService } from "../blogs.service";
+import { TAG_REPOSITORY } from "../../const/const";
 import { IBlog } from "../interface/blog.interface";
 import { IPost } from "../../posts/interface/post.interface";
-import { TAG_REPOSITORY } from "../../const/const";
+import { QueryService } from "../../sup-services/query/query.service";
+import { BlogsRequest, BlogsRequestWithoutSNT } from "../types/blog.type";
+import { Controller, Get, HttpStatus, Param, Req, Res, UsePipes, ValidationPipe } from "@nestjs/common";
+import { FindOneBlogCommand } from "../use-cases/find-one-blog-use-case";
+import { CommandBus, QueryBus } from "@nestjs/cqrs";
 
 @Controller("blogs")
 export class PublicBlogsController {
-    constructor(private readonly blogsService: BlogsService, private readonly queryService: QueryService) {}
+    constructor(
+        private readonly blogsService: BlogsService,
+        private readonly queryService: QueryService,
+        private commandBus: CommandBus,
+    ) {}
 
     @Get()
     public async findAllBlogs(@Req() req: Request, @Res() res: Response) {
@@ -44,9 +50,10 @@ export class PublicBlogsController {
     }
 
     @Get(":id")
+    //@UsePipes(new ValidationPipe({ transform: true }))
     public async findOne(@Param("id") id: string, @Res() res: Response) {
         try {
-            const findBlog: IBlog | undefined = await this.blogsService.findOne(id);
+            const findBlog: IBlog | undefined = await this.commandBus.execute(new FindOneBlogCommand(id));
 
             res.status(HttpStatus.OK).json(findBlog);
         } catch (error) {
